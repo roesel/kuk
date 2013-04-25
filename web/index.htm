@@ -1,0 +1,107 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>KUK - Fyzsem</title>
+
+		<!-- Loading offline copies when there's no internet access. 
+                                 No (c) violations intended. -->
+    <script type="text/javascript" src="jquery.min.js"></script>
+		<script type="text/javascript">
+$(function () {
+    $(document).ready(function() {
+        Highcharts.setOptions({
+            global: {
+                useUTC: false
+            }
+        });
+    
+        var chart;
+        chart = new Highcharts.Chart({
+            chart: {
+                renderTo: 'container',
+                type: 'spline',
+                marginRight: 10,
+                events: {
+                    load: function() {
+    
+                        // set up the updating of the chart each second
+                        var series = this.series[0];
+                        setInterval(function() {
+                            var x = (new Date()).getTime(),
+                                y; // current time
+                                //y = //Math.random(); 
+                            jQuery.get('data.php', function(y) {
+                                series.addPoint([x, parseInt(y)], true, true);
+                            });
+                            
+                        }, 1000);
+                    }
+                }
+            },
+            title: {
+                text: 'Rychlost kuličky'
+            },
+            xAxis: {
+                type: 'datetime',
+                /*min: (function() {
+                    var time = (new Date()).getTime();
+                    return time;
+                })(),*/
+                tickPixelInterval: 150
+            },
+            yAxis: {
+                title: {
+                    text: 'Rychlost [m/s]'
+                },
+                min: 0,
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color: '#808080'
+                }]
+            },
+            tooltip: {
+                formatter: function() {
+                        return '<b>'+ this.series.name +'</b><br/>'+
+                        Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) +'<br/>'+
+                        Highcharts.numberFormat(this.y, 2);
+                }
+            },
+            legend: {
+                enabled: false
+            },
+            exporting: {
+                enabled: false
+            },
+            series: [{
+                name: 'Rychlost kuličky',
+                data: (function() {
+                    // generate an array of random data
+                    var data = [],
+                        time = (new Date()).getTime(),
+                        i;
+    
+                    for (i = -49; i <= 0; i++) {
+                            data.push({
+                            x: time + i * 1000,
+                            y: 0 
+                        });
+                    }  
+                    return data;
+                })()
+            }]
+        });
+    });
+    
+});
+		</script>
+	</head>
+	<body>
+<script src="highcharts.js"></script>
+<script src="exporting.js"></script>
+
+<div id="container" style="min-width: 400px; height: 400px; margin: 0 auto"></div>
+
+	</body>
+</html>
